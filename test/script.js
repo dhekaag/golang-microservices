@@ -32,7 +32,7 @@ export function setup() {
 export default function () {
     const url = 'http://localhost:8080/api/v1/users';
     const headers = {
-        'Authorization': 'Bearer b75efa60262ca622d8da39724ba5c1de54b011b1cbc3f9345e96d17a81d3752c',
+        'Authorization': 'Bearer c57dcf2cdb6e14c51a433255734ff7bd870ef04af97ac435ebd1b0f50e101ed0',
         'Content-Type': 'application/json',
     };
 
