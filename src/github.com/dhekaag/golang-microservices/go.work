@@ -1,0 +1,7 @@
+go 1.24.6
+
+use (
+./shared/
+./services/api-gateway
+./services/user-service
+)
