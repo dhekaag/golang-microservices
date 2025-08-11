@@ -1,60 +1,75 @@
-.PHONY: help dev prod build test clean run stop
+ROOT_DIR=${PWD}
 
-PROJECT_NAME := golang-microservices
-DOCKER_COMPOSE_DEV := docker-compose.dev.yml
-DOCKER_COMPOSE_PROD := docker-compose.prod.yml
+.DEFAULT_GOAL := help
 
-help: ## Show help
-    @grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-10s %s\n", $$1, $$2}'
+help:
+	@echo "Type: make [rule]. Available options are:"
+	@echo "  dev          - Start development environment"
+	@echo "  dev-logs     - Show development logs"
+	@echo "  dev-stop     - Stop development environment"
+	@echo "  prod         - Start production environment"
+	@echo "  prod-stop    - Stop production environment"
+	@echo "  build        - Build all services"
+	@echo "  docker-build - Build Docker images"
+	@echo "  run-gateway  - Run API Gateway locally"
+	@echo "  run-user-service - Run User Service locally"
+	@echo "  test         - Run tests"
+	@echo "  deps         - Install dependencies"
+	@echo "  fmt          - Format code"
+	@echo "  setup        - Setup environment"
 
-dev: ## Start development environment
-    docker-compose -f $(DOCKER_COMPOSE_DEV) up -d
+dev:
+	cd deployment && docker compose -f docker-compose.dev.yml up --build
 
-dev-logs: ## Show development logs
-    docker-compose -f $(DOCKER_COMPOSE_DEV) logs -f
+dev-logs:
+	@echo "Showing development logs..."
+	cd deployment && docker compose -f docker-compose.dev.yml logs -f
 
-dev-stop: ## Stop development environment
-    docker-compose -f $(DOCKER_COMPOSE_DEV) down
+dev-stop:
+	@echo "Stopping development environment..."
+	cd deployment && docker compose -f docker-compose.dev.yml down
 
-prod: ## Start production environment
-    docker-compose -f $(DOCKER_COMPOSE_PROD) up -d
+prod:
+	@echo "Running production environment..."
+	cd deployment && docker compose -f docker-compose.prod.yml up --build
 
-prod-stop: ## Stop production environment
-    docker-compose -f $(DOCKER_COMPOSE_PROD) down
+prod-stop:
+	@echo "Stopping production environment..."
+	cd deployment && docker compose -f docker-compose.prod.yml down
 
-build: ## Build all services
-    @echo "Building services..."
-    cd services/api-gateway && go build -o api-gateway ./cmd/
-    cd services/user-service && go build -o user-service ./cmd/
+build:
+	cd services/api-gateway && go build -o api-gateway ./cmd/
+	cd services/user-service && go build -o user-service ./cmd/
 
-docker-build: ## Build Docker images
-    docker-compose -f $(DOCKER_COMPOSE_DEV) build
+docker-build:
+	@echo "Building Docker images..."
+	cd deployment && docker compose -f docker-compose.prod.yml build
 
-run-gateway: ## Run API Gateway locally
-    cd services/api-gateway && go run ./cmd/
+run-gateway:
+	@echo "Running API Gateway..."
+	cd services/api-gateway && go run ./cmd/
 
-run-user: ## Run User Service locally
-    cd services/user-service && go run ./cmd/
+run-user-service:
+	@echo "Running User Service..."
+	cd services/user-service && go run ./cmd/
 
-test: ## Run tests
-    go test ./... -v
+test:
+	@echo "Running tests..."
+	cd services/api-gateway && go test ./...
+	cd services/user-service && go test ./...
 
-test-cover: ## Run tests with coverage
-    go test ./... -v -coverprofile=coverage.out
-    go tool cover -html=coverage.out -o coverage.html
+deps:
+	@echo "Installing dependencies..."
+	cd services/api-gateway && go mod tidy
+	cd services/user-service && go mod tidy
 
-deps: ## Download dependencies
-    go mod download
-    go mod tidy
+fmt:
+	@echo "Formatting code..."
+	cd services/api-gateway && go fmt ./...
+	cd services/user-service && go fmt ./...
 
-fmt: ## Format code
-    go fmt ./...
-
-clean: ## Clean build artifacts
-    rm -f services/*/api-gateway
-    rm -f services/*/user-service
-    rm -f coverage.out coverage.html
-
-setup: ## Setup development environment
-    go mod download
-    @echo "Development environment ready!"
+setup:
+	@echo "Setting up the environment..."
+	make deps
+	make fmt
+	make build
