@@ -16,11 +16,9 @@ type BootstrapConfig struct {
 	Validate       *validator.Validate
 	RedisClient    *redis.Client
 	SessionManager *session.SessionManager
-	// Remove handler and router from here to break the cycle
 }
 
 func BootStrap(config *Config) (*BootstrapConfig, error) {
-	// Initialize logger
 	loggerInstance, err := logger.Init(logger.Config{
 		Level:       "info",
 		Format:      "text",
@@ -31,7 +29,6 @@ func BootStrap(config *Config) (*BootstrapConfig, error) {
 		return nil, err
 	}
 
-	// Initialize Redis client
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     config.Session.RedisAddr,
 		Password: config.Session.RedisPassword,
