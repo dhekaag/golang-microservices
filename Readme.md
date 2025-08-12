@@ -8,6 +8,49 @@ A simple microservices architecture built with Go, featuring API Gateway and Use
 Client → API Gateway (8080) → User Service (8081)
 ```
 
+## Tech Stack
+
+### Backend
+
+- **[Go 1.24.6](https://golang.org/)** - Primary programming language
+- **[GORM](https://gorm.io/)** - ORM library for database operations
+- **[MySQL 8.0](https://www.mysql.com/)** - Primary database
+- **[Redis](https://redis.io/)** - Session storage and caching
+- **[bcrypt](https://pkg.go.dev/golang.org/x/crypto/bcrypt)** - Password hashing
+
+### HTTP & Networking
+
+- **[net/http](https://pkg.go.dev/net/http)** - Built-in HTTP server
+- **[httputil](https://pkg.go.dev/net/http/httputil)** - Reverse proxy for API Gateway
+
+### Data & Validation
+
+- **[go-playground/validator](https://github.com/go-playground/validator)** - Struct validation
+- **[google/uuid](https://github.com/google/uuid)** - UUID generation
+- **[joho/godotenv](https://github.com/joho/godotenv)** - Environment variable loading
+
+### Development & Tools
+
+- **[Docker](https://www.docker.com/)** - Containerization
+- **[Docker Compose](https://docs.docker.com/compose/)** - Multi-container orchestration
+- **[Make](https://www.gnu.org/software/make/)** - Build automation
+- **[Go Workspace](https://go.dev/ref/mod#workspaces)** - Multi-module development
+
+### Architecture Patterns
+
+- **Microservices** - Service-oriented architecture
+- **API Gateway** - Single entry point pattern
+- **Repository Pattern** - Data access abstraction
+- **Middleware Stack** - Request/response processing
+- **Structured Logging** - Centralized logging with correlation IDs
+
+### DevOps & Deployment
+
+- **Multi-stage Docker builds** - Optimized container images
+- **Health checks** - Service monitoring
+- **Graceful shutdown** - Clean resource cleanup
+- **Environment-based configuration** - Flexible deployment
+
 ## Quick Start
 
 ### Using Docker Compose
@@ -90,32 +133,7 @@ make test
 make build
 ```
 
-## API Examples
-
-### Register User
-
-```bash
-curl -X POST http://localhost:8080/api/v1/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password123","name":"Test User"}'
-```
-
-### Login
-
-```bash
-curl -X POST http://localhost:8080/api/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password123"}' \
-  -c cookies.txt
-```
-
-### Get User Info
-
-```bash
-curl http://localhost:8080/api/v1/auth/me -b cookies.txt
-```
-
-## 🐳 Docker
+## Docker
 
 ```bash
 # Build images
@@ -124,4 +142,22 @@ docker build -f services/user-service/Dockerfile -t user-service .
 
 # Run with docker-compose
 docker-compose -f deployments/docker-compose.dev.yml up
+```
+
+## Project Structure
+
+```
+golang-microservices/
+├── deployments/                    # Docker compose files
+├── services/
+│   ├── api-gateway/               # API Gateway service
+│   └── user-service/              # User management service
+├── shared/                        # Shared libraries
+│   └── pkg/
+│       ├── database/              # Database utilities
+│       ├── logger/                # Structured logging
+│       ├── middleware/            # HTTP middlewares
+│       └── utils/                 # Common utilities
+├── go.work                        # Go workspace
+└── Makefile                       # Build automation
 ```
